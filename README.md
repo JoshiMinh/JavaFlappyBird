@@ -1,4 +1,33 @@
-<div align="center">
+
+icon.png
+
+## Game Overview
+
+Flappy Bird Duo is a multiplayer version of the original Flappy Bird game. Players choose a bird and navigate vertically and horizontally, competing against each other. The game allows for dynamic interactions, such as bumping and pushing between players.
+
+
+
+
+
+## Controls
+
+- **Yellow Bird:** Uses `WASD` keys for movement
+- **Red Bird:** Uses arrow keys (`↑ ↓ ← →`) for movement
+
+## Screenshots
+# **Speed Boost (SHIFT)**  
+  <p align="center">
+    <img src="/Preview/Shift.png" alt="Speed Boost" style="width:90%; height:auto;">
+  </p>
+
+# **End Game**  
+  <p align="center">
+    <img src="/Preview/End.png" alt="End Game" style="width:90%; height:auto;">
+  </p>
+
+
+
+  <div align="center">
   <img src="images/Flappy_Bird_icon.png" width="125">
   
   # Flappy Bird
@@ -6,31 +35,4 @@
 
 ## Dependencies
 
-- Latest [Java](https://www.java.com/download/ie_manual.jsp)
-- Java Development Kit ([JDK](https://www.oracle.com/java/technologies/downloads/#jdk21-windows))
-
-## Launcher
-
-1. Run the game by double-clicking `Flappy Bird.exe` or `RunGame.bat`. Don't touch the other files.
-2. Choose your options:
-   - **Themes**: Choose your preferred theme.
-   - **Difficulty**:
-     - Easy
-     - Normal
-     - Hard
-     - Impossible (not recommended)
-3. Click **ScoreBoard** to view the online database scoreboard.
-4. Click **PLAY** or **EXIT**.
-
-<div align="center">
-  <img src="/Demo/Interface.png" width="50%">
-  
-  ## Gameplay
-</div>
-
-- Press `SPACE` to play.
-- Press `ESC` to stop.
-
-<div align="center">
-  <img src="/Demo/Game.png" style="width:100%;">
-</div>
+Install Latest [Java](https://www.java.com/download/ie_manual.jsp)
