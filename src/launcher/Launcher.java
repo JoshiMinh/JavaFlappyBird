@@ -1,4 +1,9 @@
+package launcher;
 import javax.swing.*;
+
+import game.FlappyBird;
+import score.ScoreBoard;
+
 import java.awt.*;
 import java.io.*;
 

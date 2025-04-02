@@ -1,4 +1,9 @@
+package game;
 import javax.swing.*;
+
+import launcher.Launcher;
+import score.AddScore;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -1,7 +1,11 @@
+package score;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import javax.swing.*;
+
+import database.Database;
+
 import java.awt.*;
 
 public class AddScore {
