@@ -1,4 +1,4 @@
-package database;
+package com.joshiminh.flappybird.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;

@@ -1,4 +1,4 @@
-package score;
+package com.joshiminh.flappybird.score;
 import java.awt.Font;
 import java.awt.Image;
 import java.sql.Connection;
@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import database.Database;
+import com.joshiminh.flappybird.database.Database;
 
 public class ScoreBoard {
     public ScoreBoard() {

@@ -1,8 +1,8 @@
-package game;
+package com.joshiminh.flappybird.game;
 import javax.swing.*;
 
-import launcher.Launcher;
-import score.AddScore;
+import com.joshiminh.flappybird.score.AddScore;
+import com.joshiminh.flappybird.Launcher;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

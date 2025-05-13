@@ -1,10 +1,10 @@
-package score;
+package com.joshiminh.flappybird.score;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import javax.swing.*;
 
-import database.Database;
+import com.joshiminh.flappybird.database.Database;
 
 import java.awt.*;
 

@@ -1,0 +1,34 @@
+// build.gradle for JavaFlappyBird app
+
+plugins {
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // App dependencies
+    implementation libs.guava
+    implementation 'com.mysql:mysql-connector-j:8.4.0' // MySQL Connector/J
+
+    // Test dependencies
+    testImplementation libs.junit.jupiter
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(24)
+    }
+}
+
+application {
+    // Main entry point
+    mainClass = 'com.joshiminh.flappybird.Launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
