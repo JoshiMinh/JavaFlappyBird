@@ -9,6 +9,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 import com.joshiminh.flappybird.database.Database;
+import com.joshiminh.flappybird.utils.ResourceUtil;
 
 public class ScoreBoard {
     public ScoreBoard() {
@@ -32,7 +33,7 @@ public class ScoreBoard {
             table.getTableHeader().setFont(table.getTableHeader().getFont().deriveFont(Font.BOLD));
             table.getTableHeader().setReorderingAllowed(false);
 
-            var star = new ImageIcon(new ImageIcon("images/star.png").getImage()
+            var star = new ImageIcon(new ImageIcon(ResourceUtil.getResource("/images/star.png")).getImage()
                     .getScaledInstance(45, 45, Image.SCALE_DEFAULT));
 
             JOptionPane.showMessageDialog(null, new JScrollPane(table), "Player Scores",

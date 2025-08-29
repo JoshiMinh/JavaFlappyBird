@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import javax.swing.*;
 
 import com.joshiminh.flappybird.database.Database;
+import com.joshiminh.flappybird.utils.ResourceUtil;
 
 import java.awt.*;
 
@@ -17,7 +18,7 @@ public class AddScore {
             return;
         }
 
-        var star = new ImageIcon(new ImageIcon("images/star.png").getImage().getScaledInstance(45, 45, Image.SCALE_DEFAULT));
+        var star = new ImageIcon(new ImageIcon(ResourceUtil.getResource("/images/star.png")).getImage().getScaledInstance(45, 45, Image.SCALE_DEFAULT));
 
         try (Connection connection = Database.getConnection();
              PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY)) {
