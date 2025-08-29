@@ -36,3 +36,15 @@ Flappy Bird Duo is a multiplayer version of the original Flappy Bird game. Playe
 ## Dependencies
 
 Install Latest [Java](https://www.java.com/download/ie_manual.jsp)
+
+## Database Configuration
+
+The game reads database connection details from the environment. Set the
+following variables before running the application:
+
+- `DB_URL` – JDBC URL of the database
+- `DB_USERNAME` – database user name
+- `DB_PASSWORD` – database user password
+
+As an alternative, you may place a `db.properties` file on the classpath
+containing the same keys.
