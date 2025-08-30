@@ -1,4 +1,5 @@
 package com.joshiminh.flappybird.game;
+import com.joshiminh.flappybird.utils.ResourceUtil;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -33,7 +34,7 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
         // Setup main game window
         JFrame frame = new JFrame("Flappy Bird Duo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setIconImage(new ImageIcon("Images/Flappy_Bird_Duo_icon.png").getImage());
+        frame.setIconImage(new ImageIcon(ResourceUtil.getResource("/images/icon.png")).getImage());
         frame.setSize(800, 600);
         frame.setResizable(false);
         frame.add(new FlappyBirdDuoGame());
@@ -45,12 +46,12 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
         setDifficulty(1); // Initialize difficulty
 
         // Load and scale images
-        flappyBirdIcon = new ImageIcon("Images/bird.png");
-        flappyBird2Icon = new ImageIcon("Images/bird2.png"); // Load second bird image
-        backgroundImage = new ImageIcon("Images/background.png");
-        upperPipeIcon = new ImageIcon("Images/obsdown.png");
-        lowerPipeIcon = new ImageIcon("Images/obs.png");
-        base = new ImageIcon("Images/base.png");
+        flappyBirdIcon = new ImageIcon(ResourceUtil.getResource("/images/bird.png"));
+        flappyBird2Icon = new ImageIcon(ResourceUtil.getResource("/images/bird2.png")); // Load second bird image
+        backgroundImage = new ImageIcon(ResourceUtil.getResource("/images/background.png"));
+        upperPipeIcon = new ImageIcon(ResourceUtil.getResource("/images/obsdown.png"));
+        lowerPipeIcon = new ImageIcon(ResourceUtil.getResource("/images/obs.png"));
+        base = new ImageIcon(ResourceUtil.getResource("/images/base.png"));
 
         // Scale images
         backgroundImage = new ImageIcon(backgroundImage.getImage().getScaledInstance(800, 600, Image.SCALE_DEFAULT));
@@ -95,7 +96,7 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
 
     public void playSound(String soundFilePath, float volume) {
         try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(getClass().getResourceAsStream(soundFilePath));
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(ResourceUtil.getResource(soundFilePath));
             Clip clip = AudioSystem.getClip();
             clip.open(audioInputStream);
 
@@ -126,7 +127,7 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
         // Increase difficulty every 10 obstacles
         if (obstacleCount % 10 == 0 && difficulty < 4) {
             setDifficulty(difficulty);
-            playSound("Sounds/point.wav", gameVol);
+            playSound("/audio/point.wav", gameVol);
             difficulty++;
         }
     }    
@@ -156,21 +157,21 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
             Rectangle bird2 = new Rectangle(bird2X, bird2Y, 50, 40); // Second bird's rectangle
             for (Rectangle obstacle : obstacles) {
                 if (obstacle.intersects(bird1) || birdY < 0 || birdY > 475 || birdX < 0 || birdX > 800) {
-                    playSound("Sounds/bird-hit.wav", gameVol);
+                    playSound("/audio/bird-hit.wav", gameVol);
                     loser = 1;
                     endGame = true;
                     return;
                 }
                 
                 else if (obstacle.intersects(bird2) || bird2Y < 0 || bird2Y > 475 || bird2X < 0 || bird2X > 800) {
-                    playSound("Sounds/bird-hit.wav", gameVol);
+                    playSound("/audio/bird-hit.wav", gameVol);
                     loser = 2;
                     endGame = true;
                     return;
                 }
 
                 else if(bird1.intersects(bird2)) { // Check for bird-to-bird collision
-                    playSound("Sounds/bird-hit.wav", gameVol);
+                    playSound("/audio/bird-hit.wav", gameVol);
                     hit = 15;
                     if (Math.abs(birdVelocityX) < Math.abs(bird2VelocityX)) {
                         birdVelocityX += (birdX > bird2X) ? hit : -hit;
@@ -260,7 +261,7 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
     
         // Draw start button if the game hasn't started or ended
         if (!endGame && !startGame) {
-            ImageIcon startButtonIcon = new ImageIcon("Images/StartButton.png");
+            ImageIcon startButtonIcon = new ImageIcon(ResourceUtil.getResource("/images/StartButton.png"));
             startButtonIcon = new ImageIcon(startButtonIcon.getImage().getScaledInstance(150, 60, Image.SCALE_DEFAULT));
     
             int centerX = (getWidth() - startButtonIcon.getIconWidth()) / 2;
@@ -270,10 +271,10 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
         else if (startGame){
             ImageIcon shiftButton;
             if(SHIFTED){
-                shiftButton = new ImageIcon("Images/Shifted.png");
+                shiftButton = new ImageIcon(ResourceUtil.getResource("/images/Shifted.png"));
             }
             else{
-                shiftButton = new ImageIcon("Images/Shift.png");
+                shiftButton = new ImageIcon(ResourceUtil.getResource("/images/Shift.png"));
             }
             
             shiftButton = new ImageIcon(shiftButton.getImage().getScaledInstance(150, 50, Image.SCALE_DEFAULT));
@@ -300,22 +301,22 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
                 timer.setDelay(Tick);
                     birdVelocity = -13;
                     rotationAngle = -20;
-                    playSound("Sounds/flap.wav", gameVol);
+                    playSound("/audio/flap.wav", gameVol);
                     break;
                 case KeyEvent.VK_S:
                     birdVelocity = 10;
                     rotationAngle = 20;
-                    playSound("Sounds/flap.wav", gameVol);
+                    playSound("/audio/flap.wav", gameVol);
                     break;
                 case KeyEvent.VK_D:
                     birdVelocityX = 15;
                     rotationAngle = -20;
-                    playSound("Sounds/flap.wav", gameVol);
+                    playSound("/audio/flap.wav", gameVol);
                     break;
                 case KeyEvent.VK_A:
                     birdVelocityX = -15;
                     rotationAngle = -20;
-                    playSound("Sounds/flap.wav", gameVol);
+                    playSound("/audio/flap.wav", gameVol);
                     break;
         }}
         if(loser == 1 || loser == 0){
@@ -326,22 +327,22 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
             timer.setDelay(Tick);
                 bird2Velocity = -13;
                 rotationAngle2 = -20;
-                playSound("Sounds/flap.wav", gameVol);
+                playSound("/audio/flap.wav", gameVol);
                 break;
             case KeyEvent.VK_DOWN:
                 bird2Velocity = 10;
                 rotationAngle2 = 20;
-                playSound("Sounds/flap.wav", gameVol);
+                playSound("/audio/flap.wav", gameVol);
                 break;
             case KeyEvent.VK_RIGHT:
                 bird2VelocityX = 15;
                 rotationAngle2 = -20;
-                playSound("Sounds/flap.wav", gameVol);
+                playSound("/audio/flap.wav", gameVol);
                 break;
             case KeyEvent.VK_LEFT:
                 bird2VelocityX = -15;
                 rotationAngle2 = -20;
-                playSound("Sounds/flap.wav", gameVol);
+                playSound("/audio/flap.wav", gameVol);
                 break;
             }
         }
@@ -353,7 +354,7 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             timer.stop();
             
-            ImageIcon pauseIcon = new ImageIcon("Images/pause.png");
+            ImageIcon pauseIcon = new ImageIcon(ResourceUtil.getResource("/images/pause.png"));
             pauseIcon = new ImageIcon(pauseIcon.getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
             
             // Pause dialog with three options
@@ -401,10 +402,10 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
     
         // Resize the dead bird image
         if(loser == 1){
-            deadBird = new ImageIcon("Images/dead_bird.png");
+            deadBird = new ImageIcon(ResourceUtil.getResource("/images/dead_bird.png"));
         }
         else if(loser == 2){
-            deadBird = new ImageIcon("Images/dead_bird2.png");
+            deadBird = new ImageIcon(ResourceUtil.getResource("/images/dead_bird2.png"));
         }
 
         deadBird = new ImageIcon(deadBird.getImage().getScaledInstance(45, 45, Image.SCALE_DEFAULT));
