@@ -4,6 +4,7 @@ import javax.swing.*;
 import com.joshiminh.flappybird.score.AddScore;
 import com.joshiminh.flappybird.Launcher;
 import com.joshiminh.flappybird.utils.ResourceUtil;
+import com.joshiminh.flappybird.utils.GameUtil;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,10 +14,6 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.FloatControl;
 
 public class FlappyBird extends JPanel implements ActionListener, KeyListener {
     private Timer timer;
@@ -48,7 +45,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
         setFocusable(true);
         timer = new Timer(150, this);
         timer.start();
-        generateObstacle();
+        GameUtil.generateObstacle(obstacles, random, space, 55);
     }
 
     public void setDifficulty(int difficulty) {
@@ -76,27 +73,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
         }
     }
 
-    public void playSound(String soundFilePath, float volume) {
-        try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(ResourceUtil.getResource(soundFilePath))) {
-            Clip clip = AudioSystem.getClip();
-            clip.open(audioInputStream);
-            if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
-                FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-                float gain = gainControl.getMinimum() + (gainControl.getMaximum() - gainControl.getMinimum()) * volume;
-                gainControl.setValue(gain);
-            }
-            clip.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void generateObstacle() {
-        int width = 55;
-        int height = random.nextInt(300) + 50;
-        obstacles.add(new Rectangle(800, 0, width, height));
-        obstacles.add(new Rectangle(800, height + space, width, 600 - height - space));
-    }
+    
 
     public void move() {
         if (endGame) {
@@ -107,7 +84,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
             }
             obstacles.removeIf(obstacle -> obstacle.x + obstacle.width < 0);
             if (obstacles.isEmpty() || obstacles.get(obstacles.size() - 1).x < distance) {
-                generateObstacle();
+                GameUtil.generateObstacle(obstacles, random, space, 55);
             }
         } else if (startGame) {
             birdVelocity += gravity;
@@ -116,15 +93,15 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
             Rectangle bird = new Rectangle(birdX, birdY, 50, 40);
             for (Rectangle obstacle : obstacles) {
                 if (obstacle.intersects(bird) || birdY < 0 || birdY > 475) {
-                    playSound("/audio/bird-hit.wav", gameVol);
+                    GameUtil.playSound("/audio/bird-hit.wav", gameVol);
                     endGame = true;
                 } else if (birdX > obstacle.x && birdX < obstacle.x + velocity) {
                     score += 0.5;
-                    playSound("/audio/point.wav", gameVol);
+                    GameUtil.playSound("/audio/point.wav", gameVol);
                 }
             }
             if (obstacles.isEmpty() || obstacles.get(obstacles.size() - 1).x < distance) {
-                generateObstacle();
+                GameUtil.generateObstacle(obstacles, random, space, 55);
             }
             obstacles.removeIf(obstacle -> obstacle.x + obstacle.width < 0);
         } else {
@@ -187,7 +164,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
             timer.setDelay(Tick);
             birdVelocity = -13;
             rotationAngle = -20;
-            playSound("/audio/flap.wav", gameVol);
+            GameUtil.playSound("/audio/flap.wav", gameVol);
         } else if (keyCode == KeyEvent.VK_ESCAPE) {
             timer.stop();
             ImageIcon pause = new ImageIcon(ResourceUtil.getResource("/images/pause.png"));
@@ -255,7 +232,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
         Diff = DefaultDiff;
         setDifficulty(DefaultDiff);
         obstacles.clear();
-        generateObstacle();
+        GameUtil.generateObstacle(obstacles, random, space, 55);
         timer.setDelay(150);
         timer.start();
     }
