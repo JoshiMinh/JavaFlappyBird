@@ -1,4 +1,6 @@
 package com.joshiminh.flappybird.game;
+
+import com.joshiminh.flappybird.utils.GameUtil;
 import com.joshiminh.flappybird.utils.ResourceUtil;
 import javax.swing.*;
 import java.awt.*;
@@ -9,16 +11,14 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.FloatControl;
 
 public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyListener {
     private Timer timer;
     private int birdX, birdY, bird2X, bird2Y, loser = 0;
-    private int birdVelocity, birdVelocityX, bird2Velocity, bird2VelocityX, hit; // Added velocities for second bird
-    private int rotationAngle, rotationAngle2, obstacleCount = 0, difficulty = 1;
+    private int birdVelocity, birdVelocityX, bird2Velocity, bird2VelocityX, hit; // velocities for birds
+    private int rotationAngle, rotationAngle2, obstacleCount = 0;
+    private int Diff, DefaultDiff, prevScore;
+    private String theme;
     private List<Rectangle> obstacles = new ArrayList<>();
     private Random random = new Random();
     private float gameVol = 0.8f;
@@ -37,21 +37,24 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
         frame.setIconImage(new ImageIcon(ResourceUtil.getResource("/images/icon.png")).getImage());
         frame.setSize(800, 600);
         frame.setResizable(false);
-        frame.add(new FlappyBirdDuoGame());
+        frame.add(new FlappyBirdDuoGame("Original", 0));
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
     }
 
-    public FlappyBirdDuoGame() {
-        setDifficulty(1); // Initialize difficulty
+    public FlappyBirdDuoGame(String theme, int difficulty) {
+        this.theme = theme;
+        this.Diff = difficulty;
+        DefaultDiff = Diff;
+        setDifficulty(Diff);
 
         // Load and scale images
-        flappyBirdIcon = new ImageIcon(ResourceUtil.getResource("/images/bird.png"));
-        flappyBird2Icon = new ImageIcon(ResourceUtil.getResource("/images/bird2.png")); // Load second bird image
-        backgroundImage = new ImageIcon(ResourceUtil.getResource("/images/background.png"));
-        upperPipeIcon = new ImageIcon(ResourceUtil.getResource("/images/obsdown.png"));
-        lowerPipeIcon = new ImageIcon(ResourceUtil.getResource("/images/obs.png"));
-        base = new ImageIcon(ResourceUtil.getResource("/images/base.png"));
+        flappyBirdIcon = new ImageIcon(ResourceUtil.getResource("/themes/" + theme + "/bird.png"));
+        flappyBird2Icon = new ImageIcon(ResourceUtil.getResource("/images/bird2.png"));
+        backgroundImage = new ImageIcon(ResourceUtil.getResource("/themes/" + theme + "/background.png"));
+        upperPipeIcon = new ImageIcon(ResourceUtil.getResource("/themes/" + theme + "/obsdown.png"));
+        lowerPipeIcon = new ImageIcon(ResourceUtil.getResource("/themes/" + theme + "/obs.png"));
+        base = new ImageIcon(ResourceUtil.getResource("/themes/" + theme + "/base.png"));
 
         // Scale images
         backgroundImage = new ImageIcon(backgroundImage.getImage().getScaledInstance(800, 600, Image.SCALE_DEFAULT));
@@ -77,60 +80,38 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
         timer = new Timer(150, this);
         timer.start();
 
-        generateObstacle(); // Create the first obstacle
+        addObstacle(); // Create the first obstacle
     }
 
     public void setDifficulty(int difficulty) {
-        // Set parameters based on difficulty level
-        switch (difficulty) {
-            case 1:
-                Tick = 16; space = 190; distance = 530; velocity = 4; gravity = 1; break;
-            case 2:
-                Tick = 12; space = 150; distance = 470; velocity = 6; gravity = 1; break;
-            case 3:
-                Tick = 8; space = 110; distance = 410; velocity = 8; gravity = 2; break;
-            default:
-                throw new IllegalArgumentException("Invalid difficulty level");
+        int[][] settings = {
+            {20, 220, 580, 3, 1},
+            {16, 190, 530, 4, 1},
+            {12, 150, 470, 6, 1},
+            {8, 110, 110, 8, 2}
+        };
+        if (difficulty >= 0 && difficulty < settings.length) {
+            int[] s = settings[difficulty];
+            Tick = s[0];
+            space = s[1];
+            distance = s[2];
+            velocity = s[3];
+            gravity = s[4];
         }
     }
 
-    public void playSound(String soundFilePath, float volume) {
-        try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(ResourceUtil.getResource(soundFilePath));
-            Clip clip = AudioSystem.getClip();
-            clip.open(audioInputStream);
-
-            if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
-                FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-                float range = gainControl.getMaximum() - gainControl.getMinimum();
-                float gain = (range * volume) + gainControl.getMinimum();
-                gainControl.setValue(gain);
-            }
-
-            clip.start();
-        } catch (Exception e) {
-            e.printStackTrace();
+    public void getLevel(int level) {
+        if (level >= prevScore + 4 * (Diff + 1) && Diff < 3) {
+            prevScore = level;
+            setDifficulty(++Diff);
+            timer.setDelay(Tick);
         }
     }
 
-    public void generateObstacle() {
-        int space = this.space; // Space between upper and lower obstacles
-        int width = 60;
-        int height = random.nextInt(300) + 50; // Random height for lower obstacle
-    
-        // Add upper and lower obstacles
-        obstacles.add(new Rectangle(800, 0, width, height)); // Upper obstacle
-        obstacles.add(new Rectangle(800, height + space, width, 600 - height - space)); // Lower obstacle
-    
+    private void addObstacle() {
+        GameUtil.generateObstacle(obstacles, random, space, 60);
         obstacleCount++;
-    
-        // Increase difficulty every 10 obstacles
-        if (obstacleCount % 10 == 0 && difficulty < 4) {
-            setDifficulty(difficulty);
-            playSound("/audio/point.wav", gameVol);
-            difficulty++;
-        }
-    }    
+    }
 
     public void move() {
         if (!endGame && startGame) {
@@ -157,21 +138,21 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
             Rectangle bird2 = new Rectangle(bird2X, bird2Y, 50, 40); // Second bird's rectangle
             for (Rectangle obstacle : obstacles) {
                 if (obstacle.intersects(bird1) || birdY < 0 || birdY > 475 || birdX < 0 || birdX > 800) {
-                    playSound("/audio/bird-hit.wav", gameVol);
+                    GameUtil.playSound("/audio/bird-hit.wav", gameVol);
                     loser = 1;
                     endGame = true;
                     return;
                 }
                 
                 else if (obstacle.intersects(bird2) || bird2Y < 0 || bird2Y > 475 || bird2X < 0 || bird2X > 800) {
-                    playSound("/audio/bird-hit.wav", gameVol);
+                    GameUtil.playSound("/audio/bird-hit.wav", gameVol);
                     loser = 2;
                     endGame = true;
                     return;
                 }
 
                 else if(bird1.intersects(bird2)) { // Check for bird-to-bird collision
-                    playSound("/audio/bird-hit.wav", gameVol);
+                    GameUtil.playSound("/audio/bird-hit.wav", gameVol);
                     hit = 15;
                     if (Math.abs(birdVelocityX) < Math.abs(bird2VelocityX)) {
                         birdVelocityX += (birdX > bird2X) ? hit : -hit;
@@ -186,7 +167,7 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
     
             // Generate new obstacles
             if (obstacles.isEmpty() || obstacles.get(obstacles.size() - 1).x < distance) {
-                generateObstacle();
+                addObstacle();
             }
 
             // Remove off-screen obstacles
@@ -223,7 +204,7 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
     
             // Generate new obstacles
             if (obstacles.isEmpty() || obstacles.get(obstacles.size() - 1).x < distance) {
-                generateObstacle();
+                addObstacle();
             }
 
             // Remove off-screen obstacles
@@ -280,7 +261,8 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
             shiftButton = new ImageIcon(shiftButton.getImage().getScaledInstance(150, 50, Image.SCALE_DEFAULT));
             shiftButton.paintIcon(this, g, 10, 10);
         }
-    }    
+        getLevel(obstacleCount);
+    }
     
     public void actionPerformed(ActionEvent e) {
         move();    // Move game elements
@@ -301,22 +283,22 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
                 timer.setDelay(Tick);
                     birdVelocity = -13;
                     rotationAngle = -20;
-                    playSound("/audio/flap.wav", gameVol);
+                    GameUtil.playSound("/audio/flap.wav", gameVol);
                     break;
                 case KeyEvent.VK_S:
                     birdVelocity = 10;
                     rotationAngle = 20;
-                    playSound("/audio/flap.wav", gameVol);
+                    GameUtil.playSound("/audio/flap.wav", gameVol);
                     break;
                 case KeyEvent.VK_D:
                     birdVelocityX = 15;
                     rotationAngle = -20;
-                    playSound("/audio/flap.wav", gameVol);
+                    GameUtil.playSound("/audio/flap.wav", gameVol);
                     break;
                 case KeyEvent.VK_A:
                     birdVelocityX = -15;
                     rotationAngle = -20;
-                    playSound("/audio/flap.wav", gameVol);
+                    GameUtil.playSound("/audio/flap.wav", gameVol);
                     break;
         }}
         if(loser == 1 || loser == 0){
@@ -327,22 +309,22 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
             timer.setDelay(Tick);
                 bird2Velocity = -13;
                 rotationAngle2 = -20;
-                playSound("/audio/flap.wav", gameVol);
+                GameUtil.playSound("/audio/flap.wav", gameVol);
                 break;
             case KeyEvent.VK_DOWN:
                 bird2Velocity = 10;
                 rotationAngle2 = 20;
-                playSound("/audio/flap.wav", gameVol);
+                GameUtil.playSound("/audio/flap.wav", gameVol);
                 break;
             case KeyEvent.VK_RIGHT:
                 bird2VelocityX = 15;
                 rotationAngle2 = -20;
-                playSound("/audio/flap.wav", gameVol);
+                GameUtil.playSound("/audio/flap.wav", gameVol);
                 break;
             case KeyEvent.VK_LEFT:
                 bird2VelocityX = -15;
                 rotationAngle2 = -20;
-                playSound("/audio/flap.wav", gameVol);
+                GameUtil.playSound("/audio/flap.wav", gameVol);
                 break;
             }
         }
@@ -402,7 +384,7 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
     
         // Resize the dead bird image
         if(loser == 1){
-            deadBird = new ImageIcon(ResourceUtil.getResource("/images/dead_bird.png"));
+            deadBird = new ImageIcon(ResourceUtil.getResource("/themes/" + theme + "/dead_bird.png"));
         }
         else if(loser == 2){
             deadBird = new ImageIcon(ResourceUtil.getResource("/images/dead_bird2.png"));
@@ -443,16 +425,17 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
     
         rotationAngle = 0;
         rotationAngle2 = 0;
-        difficulty = 1;
+        Diff = DefaultDiff;
+        prevScore = 0;
         obstacleCount = 0;
         loser = 0;
         SHIFTED = false;
         startGame = endGame = false;
-    
+
         // Reset difficulty and obstacles
-        setDifficulty(1);
+        setDifficulty(Diff);
         obstacles.clear();
-        generateObstacle();
+        addObstacle();
     
         // Restart game timer
         timer.setDelay(150);
