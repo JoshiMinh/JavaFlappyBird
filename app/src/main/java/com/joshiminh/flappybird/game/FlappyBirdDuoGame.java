@@ -185,10 +185,10 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
             }
     
             // Generate new obstacles
-            if (obstacles.get(obstacles.size() - 1).x < distance) {
+            if (obstacles.isEmpty() || obstacles.get(obstacles.size() - 1).x < distance) {
                 generateObstacle();
             }
-    
+
             // Remove off-screen obstacles
             obstacles.removeIf(obstacle -> obstacle.x + obstacle.width < 0);
     
@@ -222,14 +222,14 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
             }
     
             // Generate new obstacles
-            if (obstacles.get(obstacles.size() - 1).x < distance) {
+            if (obstacles.isEmpty() || obstacles.get(obstacles.size() - 1).x < distance) {
                 generateObstacle();
             }
-    
+
             // Remove off-screen obstacles
             obstacles.removeIf(obstacle -> obstacle.x + obstacle.width < 0);
         }
-    }    
+    }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -238,11 +238,11 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
         backgroundImage.paintIcon(this, g, 0, 0);
     
         // Draw obstacles
-        for (Rectangle obstacle : obstacles) {
-            int pipeSpace = space;
-            // Draw upper and lower pipes
-            g.drawImage(upperPipeIcon.getImage(), obstacle.x, obstacle.y, obstacle.width, obstacle.height, this);
-            g.drawImage(lowerPipeIcon.getImage(), obstacle.x, obstacle.y + obstacle.height + pipeSpace, obstacle.width, obstacle.height, this);
+        for (int i = 0; i < obstacles.size(); i += 2) {
+            Rectangle upper = obstacles.get(i);
+            Rectangle lower = obstacles.get(i + 1);
+            g.drawImage(upperPipeIcon.getImage(), upper.x, upper.y, upper.width, upper.height, this);
+            g.drawImage(lowerPipeIcon.getImage(), lower.x, lower.y, lower.width, lower.height, this);
         }
     
         // Draw ground

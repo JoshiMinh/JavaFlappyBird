@@ -106,7 +106,9 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
                 if (birdY > 475) gameOver();
             }
             obstacles.removeIf(obstacle -> obstacle.x + obstacle.width < 0);
-            if (obstacles.get(obstacles.size() - 1).x < distance) generateObstacle();
+            if (obstacles.isEmpty() || obstacles.get(obstacles.size() - 1).x < distance) {
+                generateObstacle();
+            }
         } else if (startGame) {
             birdVelocity += gravity;
             birdY += birdVelocity;
@@ -121,7 +123,9 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
                     playSound("/audio/point.wav", gameVol);
                 }
             }
-            if (obstacles.get(obstacles.size() - 1).x < distance) generateObstacle();
+            if (obstacles.isEmpty() || obstacles.get(obstacles.size() - 1).x < distance) {
+                generateObstacle();
+            }
             obstacles.removeIf(obstacle -> obstacle.x + obstacle.width < 0);
         } else {
             birdY += Down ? 10 : -10;
@@ -133,10 +137,11 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         backgroundImage.paintIcon(this, g, 0, 0);
-        for (Rectangle obstacle : obstacles) {
-            int lowerPipeHeight = 600 - obstacle.height - space;
-            g.drawImage(lowerPipeIcon.getImage(), obstacle.x, obstacle.y + obstacle.height + space, obstacle.width, lowerPipeHeight, this);
-            g.drawImage(upperPipeIcon.getImage(), obstacle.x, obstacle.y, obstacle.width, obstacle.height, this);
+        for (int i = 0; i < obstacles.size(); i += 2) {
+            Rectangle upper = obstacles.get(i);
+            Rectangle lower = obstacles.get(i + 1);
+            g.drawImage(upperPipeIcon.getImage(), upper.x, upper.y, upper.width, upper.height, this);
+            g.drawImage(lowerPipeIcon.getImage(), lower.x, lower.y, lower.width, lower.height, this);
         }
         base.paintIcon(this, g, 0, 520);
         Graphics2D g2d = (Graphics2D) g;
