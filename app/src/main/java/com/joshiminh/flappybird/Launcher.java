@@ -6,13 +6,48 @@ import com.joshiminh.flappybird.score.ScoreBoard;
 import com.joshiminh.flappybird.utils.ResourceUtil;
 
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 
 public class Launcher {
     private static final String FILE_PATH = "/data/LastPlay.txt";
+    private static final String MANIFEST_PATH = "/themes/themes.json";
+    private static final String DEFAULT_THEME = "Original";
+
+    /**
+     * Loads available theme names from the themes manifest.
+     *
+     * @return an array of theme names defined in <code>themes.json</code>
+     */
+    private static String[] loadThemes() {
+        URL resource = ResourceUtil.getResource(MANIFEST_PATH);
+        if (resource == null) {
+            return new String[0];
+        }
+        try (InputStream in = resource.openStream()) {
+            String json = new String(in.readAllBytes(), StandardCharsets.UTF_8).trim();
+            if (json.length() <= 2) {
+                return new String[0];
+            }
+            json = json.substring(1, json.length() - 1);
+            return Arrays.stream(json.split(","))
+                    .map(s -> s.trim().replaceAll("^\\\"|\\\"$", ""))
+                    .toArray(String[]::new);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new String[0];
+        }
+    }
 
     public static void restartLauncher() {
         main(new String[0]);
@@ -20,11 +55,14 @@ public class Launcher {
 
     public static void main(String[] args) {
         JTextField nameField = new JTextField(10);
-        String[] themes = {"Original", "9-11", "Red Night", "Under Water"};
+        String[] themes = loadThemes();
         JComboBox<String> themesComboBox = new JComboBox<>(themes);
+        if (Arrays.stream(themes).anyMatch(DEFAULT_THEME::equals)) {
+            themesComboBox.setSelectedItem(DEFAULT_THEME);
+        } else if (themes.length > 0) {
+            themesComboBox.setSelectedIndex(0);
+        }
         JComboBox<String> difficulty = new JComboBox<>(new String[]{"Easy", "Normal", "Hard", "Impossible"});
-
-        themesComboBox.setSelectedItem("Original");
         difficulty.setSelectedItem("Normal");
 
         JPanel panel = new JPanel(new GridLayout(5, 2));
