@@ -15,46 +15,44 @@ import java.util.Properties;
  * keys are {@code DB_URL}, {@code DB_USERNAME} and {@code DB_PASSWORD}.</p>
  */
 public class Database {
+  private static String url;
+  private static String username;
+  private static String password;
 
-    private static String url;
-    private static String username;
-    private static String password;
-
-    private static void loadConfig() {
-        if (url != null && username != null && password != null) {
-            return;
-        }
-
-        url = getConfig("DB_URL");
-        username = getConfig("DB_USERNAME");
-        password = getConfig("DB_PASSWORD");
+  private static void loadConfig() {
+    if (url != null && username != null && password != null) {
+      return;
     }
 
-    private static String getConfig(String key) {
-        String value = System.getenv(key);
+    url = getConfig("DB_URL");
+    username = getConfig("DB_USERNAME");
+    password = getConfig("DB_PASSWORD");
+  }
+
+  private static String getConfig(String key) {
+    String value = System.getenv(key);
+    if (value != null && !value.isEmpty()) {
+      return value;
+    }
+
+    try (InputStream in = Database.class.getClassLoader().getResourceAsStream("db.properties")) {
+      if (in != null) {
+        Properties props = new Properties();
+        props.load(in);
+        value = props.getProperty(key);
         if (value != null && !value.isEmpty()) {
-            return value;
+          return value;
         }
-
-        try (InputStream in = Database.class.getClassLoader().getResourceAsStream("db.properties")) {
-            if (in != null) {
-                Properties props = new Properties();
-                props.load(in);
-                value = props.getProperty(key);
-                if (value != null && !value.isEmpty()) {
-                    return value;
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load database configuration", e);
-        }
-
-        throw new IllegalStateException("Missing configuration for " + key);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to load database configuration", e);
     }
 
-    public static Connection getConnection() throws SQLException {
-        loadConfig();
-        return DriverManager.getConnection(url, username, password);
-    }
+    throw new IllegalStateException("Missing configuration for " + key);
+  }
+
+  public static Connection getConnection() throws SQLException {
+    loadConfig();
+    return DriverManager.getConnection(url, username, password);
+  }
 }
-
