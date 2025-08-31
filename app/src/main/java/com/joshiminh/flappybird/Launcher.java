@@ -1,5 +1,6 @@
 package com.joshiminh.flappybird;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 import com.joshiminh.flappybird.game.FlappyBird;
 import com.joshiminh.flappybird.game.FlappyBirdDuoGame;
@@ -55,61 +56,100 @@ public class Launcher {
     }
 
     public static void main(String[] args) {
-        JTextField nameField = new JTextField(10);
-        String[] themes = loadThemes();
-        JComboBox<String> themesComboBox = new JComboBox<>(themes);
-        if (Arrays.stream(themes).anyMatch(DEFAULT_THEME::equals)) {
-            themesComboBox.setSelectedItem(DEFAULT_THEME);
-        } else if (themes.length > 0) {
-            themesComboBox.setSelectedIndex(0);
-        }
-        JComboBox<String> difficulty = new JComboBox<>(new String[]{"Easy", "Normal", "Hard", "Impossible"});
-        difficulty.setSelectedItem("Normal");
-
-        JPanel panel = new JPanel(new GridLayout(5, 2));
-        panel.add(new JLabel("Player Name:"));
-        panel.add(nameField);
-        panel.add(new JLabel("Select Theme:"));
-        panel.add(themesComboBox);
-        panel.add(new JLabel("Select Difficulty:"));
-        panel.add(difficulty);
-        panel.add(new JLabel("Copyright@JoshiMinh"));
-
-        try (InputStream in = Launcher.class.getResourceAsStream(FILE_PATH)) {
-            if (in != null) {
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
-                    String firstLine = reader.readLine();
-                    if (firstLine != null) nameField.setText(firstLine);
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
 
-        ImageIcon birdIcon = new ImageIcon(ResourceUtil.getResource("/images/icon.png"));
-        birdIcon = new ImageIcon(birdIcon.getImage().getScaledInstance(50, 50, Image.SCALE_DEFAULT));
+        SwingUtilities.invokeLater(LauncherFrame::new);
+    }
 
-        JFrame parentFrame = new JFrame();
-        parentFrame.setUndecorated(true);
-        parentFrame.setLocationRelativeTo(null);
-        parentFrame.setIconImage(birdIcon.getImage());
-        parentFrame.setVisible(true);
+    private static class LauncherFrame extends JFrame {
+        private final JTextField playerOneField = new JTextField(15);
+        private final JTextField playerTwoField = new JTextField(15);
+        private final JComboBox<String> themesComboBox;
+        private final JComboBox<String> difficulty;
+        private final ImageIcon birdIcon;
+        private final JPanel playerTwoPanel;
 
-        int result = JOptionPane.showOptionDialog(
-            parentFrame,
-            panel,
-            "Flappy Bird",
-            JOptionPane.DEFAULT_OPTION,
-            JOptionPane.PLAIN_MESSAGE,
-            birdIcon,
-            new String[]{"PLAY", "2-Player", "ScoreBoard", "EXIT"},
-            "PLAY"
-        );
+        LauncherFrame() {
+            birdIcon = new ImageIcon(ResourceUtil.getResource("/images/icon.png"));
+            setIconImage(birdIcon.getImage());
+            setTitle("Flappy Bird");
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        parentFrame.dispose();
+            JPanel content = new JPanel();
+            content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+            content.setBorder(new EmptyBorder(15, 15, 15, 15));
+            content.setBackground(new Color(30, 30, 30));
 
-        if (result == 0) {
-            String playerName = nameField.getText().trim();
+            Font font = new Font("SansSerif", Font.PLAIN, 16);
+
+            JLabel title = new JLabel("Flappy Bird", birdIcon, JLabel.CENTER);
+            title.setAlignmentX(Component.CENTER_ALIGNMENT);
+            title.setFont(font.deriveFont(Font.BOLD, 24f));
+            title.setForeground(Color.WHITE);
+            content.add(title);
+            content.add(Box.createRigidArea(new Dimension(0, 10)));
+
+            loadLastPlayed();
+
+            addLabeledField(content, "Player 1:", playerOneField, font);
+            playerTwoPanel = addLabeledField(content, "Player 2:", playerTwoField, font);
+            playerTwoPanel.setVisible(false);
+
+            String[] themes = loadThemes();
+            themesComboBox = new JComboBox<>(themes);
+            if (Arrays.stream(themes).anyMatch(DEFAULT_THEME::equals)) {
+                themesComboBox.setSelectedItem(DEFAULT_THEME);
+            } else if (themes.length > 0) {
+                themesComboBox.setSelectedIndex(0);
+            }
+            addLabeledField(content, "Theme:", themesComboBox, font);
+
+            difficulty = new JComboBox<>(new String[]{"Easy", "Normal", "Hard", "Impossible"});
+            difficulty.setSelectedItem("Normal");
+            addLabeledField(content, "Difficulty:", difficulty, font);
+
+            content.add(Box.createRigidArea(new Dimension(0, 10)));
+
+            JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+            buttons.setOpaque(false);
+
+            JButton playBtn = new JButton("Play", new ImageIcon(ResourceUtil.getResource("/images/StartButton.png")));
+            playBtn.setFont(font);
+            JButton twoBtn = new JButton("2-Player", new ImageIcon(ResourceUtil.getResource("/images/bird.png")));
+            twoBtn.setFont(font);
+            JButton scoreBtn = new JButton("ScoreBoard", new ImageIcon(ResourceUtil.getResource("/images/Shift.png")));
+            scoreBtn.setFont(font);
+            JButton exitBtn = new JButton("Exit", new ImageIcon(ResourceUtil.getResource("/images/pause.png")));
+            exitBtn.setFont(font);
+
+            buttons.add(playBtn);
+            buttons.add(twoBtn);
+            buttons.add(scoreBtn);
+            buttons.add(exitBtn);
+            content.add(buttons);
+
+            setContentPane(content);
+            pack();
+            setResizable(false);
+            setLocationRelativeTo(null);
+            setVisible(true);
+
+            playBtn.addActionListener(e -> startSinglePlayer());
+            twoBtn.addActionListener(e -> startTwoPlayer());
+            scoreBtn.addActionListener(e -> new ScoreBoard());
+            exitBtn.addActionListener(e -> System.exit(0));
+        }
+
+        private void startSinglePlayer() {
+            String playerName = playerOneField.getText().trim();
             String selectedTheme = (String) themesComboBox.getSelectedItem();
             int selectedDifficulty = difficulty.getSelectedIndex();
 
@@ -118,19 +158,30 @@ public class Launcher {
             frame.setSize(800, 600);
             frame.setResizable(false);
             frame.add(new FlappyBird(selectedTheme, selectedDifficulty, playerName));
-            frame.setVisible(true);
             frame.setLocationRelativeTo(null);
             frame.setIconImage(birdIcon.getImage());
+            frame.setVisible(true);
 
-            try (InputStream out = new ByteArrayInputStream(playerName.getBytes(StandardCharsets.UTF_8))) {
-                Files.copy(out, Paths.get(ResourceUtil.getResource(FILE_PATH).toURI()), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException | URISyntaxException e) {
-                e.printStackTrace();
+            saveNames(playerOneField.getText(), playerTwoField.getText());
+            dispose();
+        }
+
+        private void startTwoPlayer() {
+            if (!playerTwoPanel.isVisible()) {
+                playerTwoPanel.setVisible(true);
+                pack();
+                return;
             }
-        } else if (result == 1) {
-            JTextField playerOneField = new JTextField(10);
-            JTextField playerTwoField = new JTextField(10);
+            String playerOneName = playerOneField.getText().trim();
+            String playerTwoName = playerTwoField.getText().trim();
+            String selectedTheme = (String) themesComboBox.getSelectedItem();
+            int selectedDifficulty = difficulty.getSelectedIndex();
+            startTwoPlayerGame(playerOneName, playerTwoName, selectedTheme, selectedDifficulty, birdIcon);
+            saveNames(playerOneField.getText(), playerTwoField.getText());
+            dispose();
+        }
 
+        private void loadLastPlayed() {
             try (InputStream in = Launcher.class.getResourceAsStream(FILE_PATH)) {
                 if (in != null) {
                     try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
@@ -143,33 +194,37 @@ public class Launcher {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
 
-            JPanel namesPanel = new JPanel(new GridLayout(2, 2));
-            namesPanel.add(new JLabel("Player 1 Name:"));
-            namesPanel.add(playerOneField);
-            namesPanel.add(new JLabel("Player 2 Name:"));
-            namesPanel.add(playerTwoField);
+        private JPanel addLabeledField(JPanel parent, String labelText, JComponent field, Font font) {
+            JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+            panel.setOpaque(false);
+            JLabel label = new JLabel(labelText);
+            label.setFont(font);
+            label.setForeground(Color.WHITE);
+            field.setFont(font);
+            panel.add(label);
+            panel.add(field);
+            parent.add(panel);
+            return panel;
+        }
 
-            int option = JOptionPane.showConfirmDialog(null, namesPanel, "Enter Player Names", JOptionPane.OK_CANCEL_OPTION);
-            if (option == JOptionPane.OK_OPTION) {
-                String playerOneName = playerOneField.getText().trim();
-                String playerTwoName = playerTwoField.getText().trim();
-                startTwoPlayerGame(playerOneName, playerTwoName, birdIcon);
+        private void saveNames(String name1, String name2) {
+            String content = name1 + System.lineSeparator() + name2;
+            try (InputStream out = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))) {
+                Files.copy(out, Paths.get(ResourceUtil.getResource(FILE_PATH).toURI()), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException | URISyntaxException e) {
+                e.printStackTrace();
             }
-        } else if (result == 3) {
-            System.exit(0);
-        } else {
-            new ScoreBoard();
-            main(new String[0]);
         }
     }
 
-    private static void startTwoPlayerGame(String playerOneName, String playerTwoName, ImageIcon birdIcon) {
+    private static void startTwoPlayerGame(String playerOneName, String playerTwoName, String theme, int diff, ImageIcon birdIcon) {
         JFrame frame = new JFrame("Flappy Bird");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
         frame.setResizable(false);
-        frame.add(new FlappyBirdDuoGame());
+        frame.add(new FlappyBirdDuoGame(theme, diff));
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
         frame.setIconImage(birdIcon.getImage());
