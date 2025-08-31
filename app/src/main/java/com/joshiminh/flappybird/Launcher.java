@@ -2,6 +2,7 @@ package com.joshiminh.flappybird;
 import javax.swing.*;
 
 import com.joshiminh.flappybird.game.FlappyBird;
+import com.joshiminh.flappybird.game.FlappyBirdDuoGame;
 import com.joshiminh.flappybird.score.ScoreBoard;
 import com.joshiminh.flappybird.utils.ResourceUtil;
 
@@ -101,7 +102,7 @@ public class Launcher {
             JOptionPane.DEFAULT_OPTION,
             JOptionPane.PLAIN_MESSAGE,
             birdIcon,
-            new String[]{"PLAY", "ScoreBoard", "EXIT"},
+            new String[]{"PLAY", "2-Player", "ScoreBoard", "EXIT"},
             "PLAY"
         );
 
@@ -126,11 +127,58 @@ public class Launcher {
             } catch (IOException | URISyntaxException e) {
                 e.printStackTrace();
             }
-        } else if (result == 2) {
+        } else if (result == 1) {
+            JTextField playerOneField = new JTextField(10);
+            JTextField playerTwoField = new JTextField(10);
+
+            try (InputStream in = Launcher.class.getResourceAsStream(FILE_PATH)) {
+                if (in != null) {
+                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+                        String firstLine = reader.readLine();
+                        String secondLine = reader.readLine();
+                        if (firstLine != null) playerOneField.setText(firstLine);
+                        if (secondLine != null) playerTwoField.setText(secondLine);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            JPanel namesPanel = new JPanel(new GridLayout(2, 2));
+            namesPanel.add(new JLabel("Player 1 Name:"));
+            namesPanel.add(playerOneField);
+            namesPanel.add(new JLabel("Player 2 Name:"));
+            namesPanel.add(playerTwoField);
+
+            int option = JOptionPane.showConfirmDialog(null, namesPanel, "Enter Player Names", JOptionPane.OK_CANCEL_OPTION);
+            if (option == JOptionPane.OK_OPTION) {
+                String playerOneName = playerOneField.getText().trim();
+                String playerTwoName = playerTwoField.getText().trim();
+                startTwoPlayerGame(playerOneName, playerTwoName, birdIcon);
+            }
+        } else if (result == 3) {
             System.exit(0);
         } else {
             new ScoreBoard();
             main(new String[0]);
+        }
+    }
+
+    private static void startTwoPlayerGame(String playerOneName, String playerTwoName, ImageIcon birdIcon) {
+        JFrame frame = new JFrame("Flappy Bird");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setResizable(false);
+        frame.add(new FlappyBirdDuoGame());
+        frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
+        frame.setIconImage(birdIcon.getImage());
+
+        String content = playerOneName + System.lineSeparator() + playerTwoName;
+        try (InputStream out = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))) {
+            Files.copy(out, Paths.get(ResourceUtil.getResource(FILE_PATH).toURI()), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
         }
     }
 }
