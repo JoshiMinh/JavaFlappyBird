@@ -3,7 +3,8 @@ import com.joshiminh.flappybird.game.FlappyBird;
 import com.joshiminh.flappybird.game.FlappyBirdDuoGame;
 import com.joshiminh.flappybird.score.ScoreBoard;
 import com.joshiminh.flappybird.utils.ResourceUtil;
-import java.awt.*;
+import java.awt.GridLayout;
+import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -16,7 +17,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class Launcher {
   private static final String FILE_PATH = "/data/LastPlay.txt";
@@ -102,10 +109,11 @@ public class Launcher {
 
     parentFrame.dispose();
 
+    String selectedTheme = (String) themesComboBox.getSelectedItem();
+    int selectedDifficulty = difficulty.getSelectedIndex();
+
     if (result == 0) {
       String playerName = nameField.getText().trim();
-      String selectedTheme = (String) themesComboBox.getSelectedItem();
-      int selectedDifficulty = difficulty.getSelectedIndex();
 
       JFrame frame = new JFrame("Flappy Bird");
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -154,7 +162,8 @@ public class Launcher {
       if (option == JOptionPane.OK_OPTION) {
         String playerOneName = playerOneField.getText().trim();
         String playerTwoName = playerTwoField.getText().trim();
-        startTwoPlayerGame(playerOneName, playerTwoName, birdIcon);
+        startTwoPlayerGame(
+            playerOneName, playerTwoName, birdIcon, selectedTheme, selectedDifficulty);
       }
     } else if (result == 3) {
       System.exit(0);
@@ -164,13 +173,13 @@ public class Launcher {
     }
   }
 
-  private static void startTwoPlayerGame(
-      String playerOneName, String playerTwoName, ImageIcon birdIcon) {
+  private static void startTwoPlayerGame(String playerOneName, String playerTwoName,
+      ImageIcon birdIcon, String theme, int difficulty) {
     JFrame frame = new JFrame("Flappy Bird");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setSize(800, 600);
     frame.setResizable(false);
-    frame.add(new FlappyBirdDuoGame());
+    frame.add(new FlappyBirdDuoGame(theme, difficulty));
     frame.setVisible(true);
     frame.setLocationRelativeTo(null);
     frame.setIconImage(birdIcon.getImage());
