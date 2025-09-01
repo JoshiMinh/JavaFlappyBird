@@ -8,10 +8,17 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    googleJavaFormat
+}
+
 dependencies {
     // App dependencies
     implementation libs.guava
     implementation 'com.mysql:mysql-connector-j:8.4.0' // MySQL Connector/J
+
+    // Formatter dependency
+    googleJavaFormat 'com.google.googlejavaformat:google-java-format:1.17.0'
 
     // Test dependencies
     testImplementation libs.junit.jupiter
@@ -27,6 +34,17 @@ java {
 application {
     // Main entry point
     mainClass = 'com.joshiminh.flappybird.Launcher'
+}
+
+tasks.register('format', JavaExec) {
+    group = 'formatting'
+    description = 'Formats source code using google-java-format'
+    classpath = configurations.googleJavaFormat
+    mainClass = 'com.google.googlejavaformat.java.Main'
+    args '--replace'
+    args fileTree('src/main/java') {
+        include '**/*.java'
+    }.files.collect { it.path }
 }
 
 tasks.named('test') {
