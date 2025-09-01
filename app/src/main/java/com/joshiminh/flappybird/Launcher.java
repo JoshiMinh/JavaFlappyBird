@@ -3,6 +3,7 @@ import javax.swing.*;
 
 import com.joshiminh.flappybird.game.FlappyBird;
 import com.joshiminh.flappybird.score.ScoreBoard;
+import com.joshiminh.flappybird.utils.ResourceUtil;
 
 import java.awt.*;
 import java.io.*;
@@ -16,8 +17,7 @@ public class Launcher {
 
     public static void main(String[] args) {
         JTextField nameField = new JTextField(10);
-        File themesDir = new File("themes");
-        String[] themes = themesDir.isDirectory() ? themesDir.list((dir, name) -> new File(dir, name).isDirectory()) : new String[0];
+        String[] themes = {"Original", "Red Night", "9-11", "Under Water"};
         JComboBox<String> themesComboBox = new JComboBox<>(themes);
         JComboBox<String> difficulty = new JComboBox<>(new String[]{"Easy", "Normal", "Hard", "Impossible"});
 
@@ -40,7 +40,7 @@ public class Launcher {
             e.printStackTrace();
         }
 
-        ImageIcon birdIcon = new ImageIcon("images/Flappy_Bird_icon.png");
+        ImageIcon birdIcon = new ImageIcon(ResourceUtil.loadImage("/images/bird.png"));
         birdIcon = new ImageIcon(birdIcon.getImage().getScaledInstance(50, 50, Image.SCALE_DEFAULT));
 
         JFrame parentFrame = new JFrame();
