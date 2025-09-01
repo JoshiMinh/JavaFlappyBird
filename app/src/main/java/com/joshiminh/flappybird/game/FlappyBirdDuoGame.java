@@ -44,7 +44,11 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
     }
 
     public FlappyBirdDuoGame() {
-        setDifficulty(1); // Initialize difficulty
+        this(1);
+    }
+
+    public FlappyBirdDuoGame(int difficulty) {
+        setDifficulty(difficulty); // Initialize difficulty
 
         // Load and scale images
         flappyBirdIcon = new ImageIcon(ResourceUtil.loadImage("/images/bird.png"));
@@ -75,13 +79,14 @@ public class FlappyBirdDuoGame extends JPanel implements ActionListener, KeyList
         addKeyListener(this);
         setFocusable(true);
 
-        timer = new Timer(150, this);
+        timer = new Timer(Tick, this);
         timer.start();
 
         generateObstacle(); // Create the first obstacle
     }
 
     public void setDifficulty(int difficulty) {
+        this.difficulty = difficulty;
         // Set parameters based on difficulty level
         switch (difficulty) {
             case 1:
