@@ -1,3 +1,5 @@
+package joshiminh.flappybird;
+
 import java.awt.Font;
 import java.awt.Image;
 import java.sql.Connection;
@@ -29,7 +31,7 @@ public class ScoreBoard {
             table.getTableHeader().setFont(table.getTableHeader().getFont().deriveFont(Font.BOLD));
             table.getTableHeader().setReorderingAllowed(false);
 
-            var star = new ImageIcon(new ImageIcon("images/star.png").getImage()
+            var star = new ImageIcon(new ImageIcon("resources/images/star.png").getImage()
                     .getScaledInstance(45, 45, Image.SCALE_DEFAULT));
 
             JOptionPane.showMessageDialog(null, new JScrollPane(table), "Player Scores",

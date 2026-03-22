@@ -1,4 +1,4 @@
-package offline;
+package joshiminh.flappybird.offline;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

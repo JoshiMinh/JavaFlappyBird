@@ -1,9 +1,11 @@
+package joshiminh.flappybird;
+
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
+import java.util.prefs.Preferences;
+import java.io.File;
 
 public class Launcher {
-    private static final String FILE_PATH = "LastPlay.txt";
 
     public static void restartLauncher() {
         main(new String[0]);
@@ -11,7 +13,7 @@ public class Launcher {
 
     public static void main(String[] args) {
         JTextField nameField = new JTextField(10);
-        File themesDir = new File("themes");
+        File themesDir = new File("resources/themes");
         String[] themes = themesDir.isDirectory() ? themesDir.list((dir, name) -> new File(dir, name).isDirectory()) : new String[0];
         JComboBox<String> themesComboBox = new JComboBox<>(themes);
         JComboBox<String> difficulty = new JComboBox<>(new String[]{"Easy", "Normal", "Hard", "Impossible"});
@@ -28,14 +30,11 @@ public class Launcher {
         panel.add(difficulty);
         panel.add(new JLabel("Copyright@JoshiMinh"));
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
-            String firstLine = reader.readLine();
-            if (firstLine != null) nameField.setText(firstLine);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Preferences prefs = Preferences.userNodeForPackage(Launcher.class);
+        String lastPlayer = prefs.get("LastPlayer", "Player");
+        nameField.setText(lastPlayer);
 
-        ImageIcon birdIcon = new ImageIcon("images/Flappy_Bird_icon.png");
+        ImageIcon birdIcon = new ImageIcon("icon.png");
         birdIcon = new ImageIcon(birdIcon.getImage().getScaledInstance(50, 50, Image.SCALE_DEFAULT));
 
         JFrame parentFrame = new JFrame();
@@ -71,11 +70,7 @@ public class Launcher {
             frame.setLocationRelativeTo(null);
             frame.setIconImage(birdIcon.getImage());
 
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
-                writer.write(playerName);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            prefs.put("LastPlayer", playerName);
         } else if (result == 2) {
             System.exit(0);
         } else {

@@ -1,4 +1,4 @@
-package offline;
+package joshiminh.flappybird.offline;
 
 public class ScoreEntry {
     public final String timestamp;

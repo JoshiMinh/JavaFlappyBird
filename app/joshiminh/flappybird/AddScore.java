@@ -1,3 +1,5 @@
+package joshiminh.flappybird;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -13,7 +15,7 @@ public class AddScore {
             return;
         }
 
-        var star = new ImageIcon(new ImageIcon("images/star.png").getImage().getScaledInstance(45, 45, Image.SCALE_DEFAULT));
+        var star = new ImageIcon(new ImageIcon("resources/images/star.png").getImage().getScaledInstance(45, 45, Image.SCALE_DEFAULT));
 
         try (Connection connection = Database.getConnection();
              PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY)) {
