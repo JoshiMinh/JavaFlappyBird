@@ -1,53 +1,63 @@
 <div align="center">
-  <img src="icon.png" width="125">
+  <img src="icon.png" width="100" alt="Game Icon">
 
-# Flappy Bird
+  # Java Flappy Bird
 
+  Flappy Bird is a classic arcade game recreated in Java. Fly your bird through pipes, avoid obstacles, and challenge your reflexes!
 </div>
 
 ---
 
-## 🚀 Getting Started
-
-**Requirements:**
-- [Java](https://www.java.com/download/ie_manual.jsp) (latest version)
-- [Java Development Kit (JDK)](https://www.oracle.com/java/technologies/downloads/#jdk21-windows)
+## 🚀 Requirements
+Latest versions of:
+- [Java Runtime Environment (JRE)](https://www.java.com/download/ie_manual.jsp)  
+- [Java Development Kit (JDK)](https://www.oracle.com/java/technologies/downloads/#jdk21-windows)  
+  
 
 ---
 
-## 🎮 How to Launch
+## 📁 Project Structure
 
-1. **Run the Game:**  
-   Execute `run.bat` from your terminal or double-click the file.
+```
+app/        # Main Java source code
+resources/  # Images, sounds, and themes
+run.bat     # Windows launcher script
+preview/    # Screenshots and previews
+```
 
-2. **Select Options:**  
-   - **Themes:** Pick your favorite look.
+---
+
+## 🎮 How to Play
+
+1. **Start the Game:**  
+   Run `run.bat` (double-click or from terminal).
+
+2. **Choose Your Style:**  
+   - **Themes:** Select from various looks (Original, Red Night, etc.)
    - **Difficulty:**  
      - Easy  
      - Normal  
      - Hard  
-     - Impossible <sub>(challenge not recommended!)</sub>
+     - Impossible
 
-3. **Scoreboard:**  
-   Click **ScoreBoard** to view the online leaderboard.
+3. **Start or Exit:**  
+   Click **PLAY** to begin, or **EXIT** to quit.
 
-4. **Start or Exit:**  
-   Click **PLAY** to begin or **EXIT** to quit.
+<p align="center">
+  <img src="preview/Interface.png" alt="Launcher Preview" width="400">
+</p>
 
 ---
 
-<div align="center">
-  <img src="preview/Interface.png" width="60%">
+## ✨ Features
 
-## 🕹️ Gameplay
+- Multiple visual themes
+- Four difficulty levels
+- Sound effects
+- Pause and resume functionality
 
-</div>
-
-- Press `SPACE` to flap and play.
-- Press `ESC` to pause or stop.
-
-<div align="center">
-  <img src="preview/Game.png" width="80%">
-</div>
+<p align="center">
+  <img src="preview/Game.png" alt="Gameplay Preview">
+</p>
 
 ---

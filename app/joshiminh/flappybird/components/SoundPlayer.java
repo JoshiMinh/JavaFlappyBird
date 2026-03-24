@@ -1,7 +1,7 @@
 package joshiminh.flappybird.components;
 
-import javax.sound.sampled.*;
 import java.io.File;
+import javax.sound.sampled.*;
 
 /** Fire-and-forget sound utility. Each call runs on a daemon thread. */
 public final class SoundPlayer {

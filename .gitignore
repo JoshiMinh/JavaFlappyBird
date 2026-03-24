@@ -1,5 +1,30 @@
-*.class
-scores.csv
+# Java build output
 bin/
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE settings
 .vscode/
 .idea/
+.project
+.classpath
+.settings/
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+~$*
+
+# User data
+scores.csv
+
+# Misc
+*.iml

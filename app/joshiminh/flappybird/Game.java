@@ -1,12 +1,11 @@
 package joshiminh.flappybird;
 
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 import joshiminh.flappybird.components.GamePhysics;
 import joshiminh.flappybird.components.GameRenderer;
 import joshiminh.flappybird.components.SoundPlayer;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
 
 /**
  * Thin JPanel coordinator: owns the timer, key listener, and dialog flows.

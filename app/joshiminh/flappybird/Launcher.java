@@ -1,12 +1,11 @@
 package joshiminh.flappybird;
 
-import joshiminh.flappybird.components.GameRenderer;
-
-import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
 import java.io.File;
 import java.util.prefs.Preferences;
+import javax.swing.*;
+import javax.swing.border.*;
+import joshiminh.flappybird.components.GameRenderer;
 
 public class Launcher {
 
